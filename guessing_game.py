@@ -29,58 +29,82 @@ def evaluate_guess(secret, guess):
 
     return " ".join(feedback)
 
-# Streamlit UI
-st.title("🔢 Deductive Logic Game - Guess the Secret Number 🎮")
+# Mobile-Friendly UI Optimization
+st.set_page_config(page_title="Guess the Number", layout="centered")
 
-# Store secret number & attempts in session state
+# Game Title
+st.markdown("<h1 style='text-align: center;'>🔢 Deductive Logic Game 🎮</h1>", unsafe_allow_html=True)
+
+# Game Instructions (Always Visible)
+with st.expander("📜 How to Play?", expanded=True):
+    st.write("""
+    - Enter a **3-digit number**  
+    - Get hints after each guess:  
+      - **👌 Correct digit, correct place**  
+      - **👍 Correct digit, wrong place**  
+      - **❌ No correct digits**  
+    - You have **10 attempts** to guess the secret number.  
+    - 🎉 Win by guessing correctly or ❌ lose if attempts run out!
+    """)
+
+# Store game state
 if "secret_number" not in st.session_state:
     st.session_state.secret_number = generate_secret_number()
     st.session_state.attempts = 10
     st.session_state.history = []
-    st.session_state["user_guess"] = ""  # Reset input box
+    st.session_state.submitted = False  # Ensure single submission
 
-# User input (RESET TEXT BOX)
-guess = st.text_input("Enter a 3-digit number:", value=st.session_state["user_guess"], max_chars=3)
+# User Input Section
+st.markdown("<h3 style='text-align: center;'>🔢 Enter a 3-digit number:</h3>", unsafe_allow_html=True)
+guess = st.text_input("", max_chars=3, help="Enter a 3-digit number (e.g., 123)")
 
-if st.button("Submit Guess"):
-    if len(guess) == 3 and guess.isdigit():
-        feedback = evaluate_guess(st.session_state.secret_number, guess)
-        st.session_state.history.append(f"🔢 {guess} → {feedback}")
-        st.session_state.attempts -= 1
+# Submit Button with Prevention for Double Submission
+if st.button("Submit Guess", use_container_width=True):
+    if not st.session_state.submitted:
+        st.session_state.submitted = True  # Lock further submissions
 
-        if guess == st.session_state.secret_number:
-            st.success(f"🎉 You guessed it! The secret number was {st.session_state.secret_number} 🎉")
-            st.balloons()
-            time.sleep(2)
-            st.session_state.clear()  # Reset game
-            st.rerun()  # Refresh page
+        if len(guess) == 3 and guess.isdigit():
+            feedback = evaluate_guess(st.session_state.secret_number, guess)
+            st.session_state.history.append(f"🔢 {guess} → {feedback}")
+            st.session_state.attempts -= 1
 
-        elif st.session_state.attempts == 0:
-            st.error(f"❌ Game Over! The secret number was {st.session_state.secret_number}. Try again!")
-            time.sleep(2)
-            st.session_state.clear()  # Reset game
-            st.rerun()  # Refresh page
-    else:
-        st.warning("⚠️ Please enter a valid 3-digit number!")
+            if guess == st.session_state.secret_number:
+                st.success(f"🎉 You guessed it! The secret number was {st.session_state.secret_number} 🎉")
+                st.balloons()
+                time.sleep(2)
+                st.session_state.clear()
+                st.rerun()
 
-# Display previous attempts
-st.subheader("Previous Attempts")
+            elif st.session_state.attempts == 0:
+                st.error(f"❌ Game Over! The secret number was {st.session_state.secret_number}. Try again!")
+                time.sleep(2)
+                st.session_state.clear()
+                st.rerun()
+        else:
+            st.warning("⚠️ Please enter a valid 3-digit number!")
+
+        st.session_state.submitted = False  # Unlock submission for next input
+
+# Display Previous Attempts in a Scrollable Box
+st.markdown("<h3 style='text-align: center;'>📜 Previous Attempts</h3>", unsafe_allow_html=True)
+st.markdown("<div style='max-height: 200px; overflow-y: auto; border: 1px solid #ddd; padding: 10px;'>", unsafe_allow_html=True)
 for attempt in st.session_state.history:
     st.write(attempt)
+st.markdown("</div>", unsafe_allow_html=True)
 
-# Display remaining attempts
-st.sidebar.subheader("Game Info")
-st.sidebar.write(f"🎯 Attempts Left: {st.session_state.attempts}")
-st.sidebar.write("✅ Correct Place → `👌`")
-st.sidebar.write("🔄 Wrong Place → `👍`")
-st.sidebar.write("❌ Not Present → `❌`")
+# Sidebar - Game Information
+st.sidebar.subheader("ℹ️ Game Info")
+st.sidebar.write(f"🎯 **Attempts Left:** {st.session_state.attempts}")
+st.sidebar.write("✅ **Correct Place:** `👌`")
+st.sidebar.write("🔄 **Wrong Place:** `👍`")
+st.sidebar.write("❌ **Not Present:** `❌`")
 
-# 🏆 Developed by Section at the Bottom
+# Footer - Developed By
 st.markdown(
     """
     ---
-    🔥 **Developed by Shoaib** 🚀  
-    *Built with ❤️ using Streamlit and python*
+    🔥 **Developed by Shoaib Munir** 🚀  
+    *Built with ❤️ using Streamlit*
     """,
     unsafe_allow_html=True
 )
