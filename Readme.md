@@ -44,14 +44,11 @@ streamlit run guessing_game.py
 
 ---
 
-## 📸 Screenshots
-🎮 **Gameplay Interface:**  
-*(Add a screenshot of the game UI here!)*
-
-🎉 **Winning Screen with Balloons:**  
-*(Add a screenshot of winning message here!)*
+## 🌍 Live Demo  
+🔗 **Play the game online:** [Project Live Demo](https://mahteck-deductive-logic-game-guessing-game-3rqawi.streamlit.app/)
 
 ---
+
 
 ## 🏆 Developed By
 🔥 **Shoaib Munir** 🚀  
