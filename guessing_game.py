@@ -60,8 +60,8 @@ guess = st.text_input("", max_chars=3, help="Enter a 3-digit number (e.g., 123)"
 
 # Submit Button with Prevention for Double Submission
 if st.button("Submit Guess", use_container_width=True):
-    if not st.session_state.submitted:
-        st.session_state.submitted = True  # Lock further submissions
+    if not st.session_state.get("submitted", False):  # Check if already submitted
+        st.session_state.submitted = True  # Lock submission
 
         if len(guess) == 3 and guess.isdigit():
             feedback = evaluate_guess(st.session_state.secret_number, guess)
@@ -73,17 +73,18 @@ if st.button("Submit Guess", use_container_width=True):
                 st.balloons()
                 time.sleep(2)
                 st.session_state.clear()
-                st.rerun()
+                st.rerun()  # ✅ Corrected line
 
             elif st.session_state.attempts == 0:
                 st.error(f"❌ Game Over! The secret number was {st.session_state.secret_number}. Try again!")
                 time.sleep(2)
                 st.session_state.clear()
-                st.rerun()
+                st.rerun()  # ✅ Corrected line
         else:
             st.warning("⚠️ Please enter a valid 3-digit number!")
 
-        st.session_state.submitted = False  # Unlock submission for next input
+        # Unlock submission in the next rerun
+        st.session_state.submitted = False
 
 # Display Previous Attempts in a Scrollable Box
 st.markdown("<h3 style='text-align: center;'>📜 Previous Attempts</h3>", unsafe_allow_html=True)
